@@ -3,6 +3,7 @@ from telebot import types
 import find_path as fp
 import configparser
 import launch_apps as la
+from time import time
 
 
 def get_TOKEN():
@@ -17,9 +18,9 @@ def get_ADMIN_ID():
     return int(config['DEFAULT']['ADMIN_ID'])
 
 
-def check_exist_path_app():
+def check_exist_path_app():  # now unusable by modify find_app_path() and set_path_info() fuctions
     paths = fp.get_path_info()
-    exist = {key: value for (key, value) in paths.items() if len(value) >= 3}
+    exist = {key: value for (key, value) in paths.items() if len(value) >= 5}
     return exist
 
 
@@ -29,7 +30,7 @@ def get_apps_launch_buttons():
     buttons_names.append(types.KeyboardButton("🪄Игровой протокол🪄"))
     if 'steam' in exist_apps:
         buttons_names.append(types.KeyboardButton('♨️Steam✅'))
-    if 'Discord' in exist_apps:
+    if 'discord.lnk' in exist_apps:
         buttons_names.append(types.KeyboardButton('👾Discord✅'))
     if 'dota2' in exist_apps:
         buttons_names.append(types.KeyboardButton('👨🏽‍❤️‍💋‍👨🏽Dota 2✅'))
@@ -51,7 +52,7 @@ def get_apps_close_buttons():
     buttons_names = list()
     if 'steam' in exist_apps:
         buttons_names.append(types.KeyboardButton('♨️Steam❌'))
-    if 'Discord' in exist_apps:
+    if 'discord.lnk' in exist_apps:
         buttons_names.append(types.KeyboardButton('👾Discord❌'))
     if 'dota2' in exist_apps:
         buttons_names.append(types.KeyboardButton('👨🏽‍❤️‍💋‍👨🏽Dota 2❌'))
@@ -68,19 +69,22 @@ def get_apps_close_buttons():
 
 # create a bot
 bot = telebot.TeleBot(get_TOKEN())
+bot.set_my_commands(
+    commands=[  # types.BotCommand(command='/help', description='show help message'),
+        types.BotCommand(command='/update', description='update paths to applications in filesystem'), ])
 
 
 def markup_main_menu():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     buttons = (types.KeyboardButton("📲Запуск приложений"),
                types.KeyboardButton("💀Закрытие приложений"),
-               types.KeyboardButton("👁️Скриншот"))
+               types.KeyboardButton("👁️Скриншот"),)
     for button in buttons:
         markup.add(button)
     return markup
 
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=['start', 'update'])
 def hello_message(message):
     if message.from_user.id == get_ADMIN_ID():
         bot.send_message(chat_id=message.chat.id,
@@ -88,9 +92,10 @@ def hello_message(message):
 
         bot.send_message(chat_id=message.chat.id,
                          text='Начинаю поиск...')
+        start = time()
         fp.check_for_values_in_path()
         bot.send_message(chat_id=message.chat.id,
-                         text='Поиск завершен! Я готов к работе!')
+                         text=f'Поиск завершен за {int(time() - start)} секунд(-ы)! Я готов к работе!')
 
         bot.send_message(
             message.chat.id, text="Что будем делать?", reply_markup=markup_main_menu())
@@ -123,7 +128,7 @@ def asnwer_message(message):
             bot.send_message(
                 message.chat.id, text=f"Приступаю к запуску\n♨️Steam")
         case '👾Discord✅':
-            la.launch_app('Discord')
+            la.launch_app('discord.lnk')
             bot.send_message(
                 message.chat.id, text=f"Приступаю к запуску\n👾Discord")
         case '👨🏽‍❤️‍💋‍👨🏽Dota 2✅':
@@ -134,10 +139,10 @@ def asnwer_message(message):
             la.launch_steam_game('csgo')
             bot.send_message(
                 message.chat.id, text=f"Приступаю к запуску\n🚮CS:GO")
-        case '📱Telegram':
+        case '📱Telegram✅':
             la.launch_app('telegram')
             bot.send_message(
-                message.chat.id, text=f"Приступаю к запуску\n📱Telegram✅")
+                message.chat.id, text=f"Приступаю к запуску\n📱Telegram")
         case '🐺Overwolf✅':
             la.launch_overwolf()
             bot.send_message(

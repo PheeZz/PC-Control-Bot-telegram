@@ -15,7 +15,7 @@ steam_game_ids = {'dota2': 570, 'csgo': 730}
 def get_image_coordinates(img, gray=True):
     try:
         coordinates = pag.locateCenterOnScreen(
-            img, grayscale=gray, confidence=0.9)
+            img, grayscale=gray, confidence=0.8)
         if coordinates is None:
             fp.logger.warning(f"{img} not found")
         else:
@@ -43,14 +43,16 @@ def click_button(img):
     fp.logger.info(f"{img} clicked successfully")
 
 
-def launch_discord():  # в threading.Thread нельзя передать длинный неитерируемый объект, т.е путь (костыль, че сказать)
-    startfile(fp.get_path_info()['Discord'])
+def launch_thread(app):  # в threading.Thread нельзя передать длинный неитерируемый объект, т.е путь (костыль, че сказать)
+    startfile(fp.get_path_info()[app])
 
 
 def launch_app(app):
     path = fp.get_path_info()[app]
-    if app == 'Discord':
-        threading.Thread(target=launch_discord).start()
+    if app == 'discord.lnk':
+        threading.Thread(target=launch_thread, args=(('discord.lnk',))).start()
+    elif app == 'telegram':
+        threading.Thread(target=launch_thread, args=(('telegram',))).start()
     else:
         pag.hotkey('win', 'r')
         pag.write(path)
@@ -82,10 +84,10 @@ def game_protocol():
             sleep(0.5)
 
     launch_app('steam')
-    launch_app('Discord')
+    launch_app('discord.lnk')
     try:
         gw.getWindowsWithTitle('steam')[0].minimize()
-        gw.getWindowsWithTitle('Discord')[0].minimize()
+        gw.getWindowsWithTitle('discord.lnk')[0].minimize()
     except Exception as e:
         fp.logger.error(e)
 
@@ -94,11 +96,15 @@ def launch_overwolf():
     '''
     запуск доты через овервульф
     '''
-    launch_app(fp.get_path_info()['overwolf'])
-    while len(gw.getWindowsWithTitle('overwolf')) > 0:
-        gw.getWindowsWithTitle('overwolf')[0].activate()
-        click_button('assets/overwolf/login.png')
-        click_button('assets/overwolf/launch.png')
+    launch_app('overwolf')
+    while(True):
+        try:
+            gw.getWindowsWithTitle('overwolf')[0].activate()
+            click_button('assets/overwolf/login.png')
+            click_button('assets/overwolf/launch.png')
+            break
+        except Exception as e:
+            fp.logger.error(e)
 
 
 def terminate(app, bot, message):

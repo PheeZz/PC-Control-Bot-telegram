@@ -1,6 +1,4 @@
-import platform
 import os
-from webbrowser import get
 import yaml
 import datetime
 from loguru import logger
@@ -21,10 +19,10 @@ def get_Datetime():
 logger.add(f"logs/{get_Datetime()}.log", rotation='1 day', level="DEBUG")
 
 
-def find_path(name, path="\\"):
-    for dirpath, dirname, filenames in os.walk(path):
-        if name in filenames:
-            return os.path.join(dirpath, name)
+def find_path(name, path='C:\\'):
+    for root, dirs, files in os.walk(path):
+        if name in files:
+            return os.path.join(root, name)
 
 
 def get_path_info():
@@ -46,31 +44,34 @@ def get_path_info():
 
 def set_path_info(data):
     if not get_path_info():
-        settings = {}
+        settings = dict()
     else:
         settings = get_path_info()
-    settings.update(data)
-    with open('settings.yaml', 'w+') as outfile:
-        yaml.dump(settings, stream=outfile)
+    if type(data) is dict:
+        settings.update(data)
+        with open('settings.yaml', 'w+') as outfile:
+            yaml.dump(settings, stream=outfile)
 
 
 def find_app_path(app):
-    drives = ('C:\\', 'D:\\', 'E:\\', 'F:\\', 'G:\\', 'H:\\')
-    try:
+    drives = ('C:\\', 'D:\\', 'E:\\', 'F:\\')
+    if app not in get_path_info():
         for drive in drives:
-            if app == 'Discord.lnk':
-                path = find_path(app, path=drive)
-            else:
-                path = find_path(f'{app}.exe', path=drive)
-            if path:
-                break
-        path = "\"" + path + "\""
-        adder = {app.lower(): path}
-        logger.info(f"{app} path found successfully")
-        logger.info(adder)
-        return adder
-    except:
-        logger.error(f"{app} not found")
+            try:
+                if app == 'Discord.lnk':
+                    path = find_path(app, drive)
+                else:
+                    path = find_path(f'{app}.exe', drive)
+                if path is not None:
+                    logger.info(f"{app} path found successfully: {path}")
+                    path = "\"" + path + "\""
+                    adder = {app.lower(): path}
+                    logger.info(f"{app} path found successfully")
+                    logger.info(adder)
+                    return adder
+            except:
+                logger.error(f"{app} not found")
+                return {app: '""'}
 
 
 def set_paths():
@@ -79,10 +80,8 @@ def set_paths():
 
 
 def check_for_values_in_path():
-    try:
-        if len(apps) > len(get_path_info()):
-            set_paths()
-    except TypeError:
+
+    if len(apps) > len(get_path_info()):
         set_paths()
 
 
