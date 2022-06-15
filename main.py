@@ -188,6 +188,8 @@ def asnwer_message(message):
 
 @fp.logger.catch
 def start_bot():
+    bot.send_animation(get_ADMIN_ID(), caption='🟢Online',
+                       animation='https://tenor.com/bg6ns.gif')
     bot.polling(none_stop=True)
 
 
