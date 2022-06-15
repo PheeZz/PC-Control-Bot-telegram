@@ -50,18 +50,24 @@ def get_apps_launch_buttons():
 def get_apps_close_buttons():
     exist_apps = check_exist_path_app()
     buttons_names = list()
-    if 'steam' in exist_apps:
+    if 'steam' in exist_apps and la.is_running('steam'):
         buttons_names.append(types.KeyboardButton('♨️Steam❌'))
-    if 'discord.lnk' in exist_apps:
+
+    if 'discord.lnk' in exist_apps and la.is_running('discord.lnk'):
         buttons_names.append(types.KeyboardButton('👾Discord❌'))
-    if 'dota2' in exist_apps:
+
+    if 'dota2' in exist_apps and la.is_running('dota2'):
         buttons_names.append(types.KeyboardButton('👨🏽‍❤️‍💋‍👨🏽Dota 2❌'))
-    if 'csgo' in exist_apps:
+
+    if 'csgo' in exist_apps and la.is_running('csgo'):
         buttons_names.append(types.KeyboardButton('🚮CS:GO❌'))
-    if 'telegram' in exist_apps:
+
+    if 'telegram' in exist_apps and la.is_running('telegram'):
         buttons_names.append(types.KeyboardButton('📱Telegram❌'))
-    if 'epicgameslauncher' in exist_apps:
+
+    if 'epicgameslauncher' in exist_apps and la.is_running('epicgameslauncher'):
         buttons_names.append(types.KeyboardButton('🎮Epic Games Launcher❌'))
+
     buttons_names.append(types.KeyboardButton('🔙Back'))
 
     return buttons_names

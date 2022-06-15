@@ -1,3 +1,4 @@
+import psutil
 import pyautogui as pag
 import find_path as fp
 from time import sleep
@@ -105,6 +106,15 @@ def launch_overwolf():
             break
         except Exception as e:
             fp.logger.error(e)
+
+
+def is_running(app):
+    if app.lower().startswith('discord'):
+        app = 'Discord'
+    for proc in psutil.process_iter():
+        if proc.name() == f"{app}.exe":
+            return True
+    return False
 
 
 def terminate(app, bot, message):
