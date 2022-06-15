@@ -160,5 +160,9 @@ cython_debug/
 #.idea/
 
 telegram.ini
+<<<<<<< HEAD
 settings*
 test*
+=======
+settings.yaml
+>>>>>>> c2d3936bd0bef46cd2badbe57997e8a308a40d90
