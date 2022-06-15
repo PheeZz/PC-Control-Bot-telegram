@@ -19,7 +19,7 @@ def get_Datetime():
 logger.add(f"logs/{get_Datetime()}.log", rotation='1 day', level="DEBUG")
 
 
-def find_path(name, path='C:\\'):
+def find_path(name: str, path='C:\\'):
     for root, dirs, files in os.walk(path):
         if name in files:
             return os.path.join(root, name)
@@ -42,7 +42,7 @@ def get_path_info():
     return paths
 
 
-def set_path_info(data):
+def set_path_info(data: dict):
     if not get_path_info():
         settings = dict()
     else:
@@ -53,7 +53,7 @@ def set_path_info(data):
             yaml.dump(settings, stream=outfile)
 
 
-def find_app_path(app):
+def find_app_path(app: str):
     drives = ('C:\\', 'D:\\', 'E:\\', 'F:\\')
     if app not in get_path_info():
         for drive in drives:

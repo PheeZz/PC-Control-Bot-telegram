@@ -1,3 +1,4 @@
+from email.mime import image
 import psutil
 import pyautogui as pag
 import find_path as fp
@@ -13,7 +14,7 @@ steam_game_ids = {'dota2': 570, 'csgo': 730}
 # function to find the button on the screen
 
 
-def get_image_coordinates(img, gray=True):
+def get_image_coordinates(img: image, gray=True) -> tuple:
     try:
         coordinates = pag.locateCenterOnScreen(
             img, grayscale=gray, confidence=0.8)
@@ -28,7 +29,7 @@ def get_image_coordinates(img, gray=True):
         return False
 
 
-def click_button(img):
+def click_button(img: image):
     is_none = True
     while is_none:
         try:
@@ -44,11 +45,12 @@ def click_button(img):
     fp.logger.info(f"{img} clicked successfully")
 
 
-def launch_thread(app):  # в threading.Thread нельзя передать длинный неитерируемый объект, т.е путь (костыль, че сказать)
+# в os.startfile нельзя передать длинный неитерируемый объект, т.е путь (костыль, че сказать)
+def launch_thread(app: str):
     startfile(fp.get_path_info()[app])
 
 
-def launch_app(app):
+def launch_app(app: str):
     path = fp.get_path_info()[app]
     if app == 'discord.lnk':
         threading.Thread(target=launch_thread, args=(('discord.lnk',))).start()
@@ -108,7 +110,7 @@ def launch_overwolf():
             fp.logger.error(e)
 
 
-def is_running(app):
+def is_running(app: str) -> bool:
     if app.lower().startswith('discord'):
         app = 'Discord'
     for proc in psutil.process_iter():
@@ -117,7 +119,7 @@ def is_running(app):
     return False
 
 
-def terminate(app, bot, message):
+def terminate(app: str, bot, message: dict):
     if app == 'Discord.lnk':
         app = 'Discord'
     try:
