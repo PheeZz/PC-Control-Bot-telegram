@@ -84,9 +84,14 @@ def markup_main_menu():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     buttons = (types.KeyboardButton("📲Запуск приложений"),
                types.KeyboardButton("💀Закрытие приложений"),
-               types.KeyboardButton("👁️Скриншот"),)
+               types.KeyboardButton("👁️Скриншот"),
+               types.KeyboardButton("🦾Auto accept"))
     for button in buttons:
-        markup.add(button)
+        if not button.text == '🦾Auto accept':
+            markup.add(button)
+        else:
+            if la.is_running('dota2'):
+                markup.add(button)
     return markup
 
 
@@ -124,6 +129,10 @@ def asnwer_message(message):
                 message.chat.id, text="Что закрываем?", reply_markup=markup)
         if message.text == '👁️Скриншот':
             bot.send_photo(message.chat.id, la.pag.screenshot())
+        if message.text == '🦾Auto accept':
+            bot.send_message(
+                message.chat.id, text='Автопринятие next каточки включено!')
+            la.accept_game()
 
     match message.text:
         case '🔙Back':
